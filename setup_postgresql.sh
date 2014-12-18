@@ -61,6 +61,6 @@ sudo service postgresql-9.3 start
 
 # Not secure
 sudo su - postgres -c "psql --set ON_ERROR_STOP=1 -c \"CREATE USER $DBUSER PASSWORD '$DBUSER';\""
-sudo su - postgres -c "psql --set ON_ERROR_STOP=1 -c \"CREATE DATABASE $DUSER OWNER $DUSER;\""
+sudo su - postgres -c "psql --set ON_ERROR_STOP=1 -c \"CREATE DATABASE $DBUSER OWNER $DBUSER;\""
 
 
