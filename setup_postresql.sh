@@ -16,6 +16,8 @@
 # TODO: if you need need any security from the user database password, this
 # needs work below!
 
+if [[ -z $DBUSER ]]; then DBUSER=$USER; fi
+
 if [[ $1 == "--enable-network" ]]; then
     ENABLE_NETWORK=true
     IP=$2 
@@ -58,7 +60,7 @@ sudo chkconfig postgresql-9.3 on
 sudo service postgresql-9.3 start
 
 # Not secure
-sudo su - postgres -c "psql --set ON_ERROR_STOP=1 -c \"CREATE USER $USER PASSWORD '$USER';\""
-sudo su - postgres -c "psql --set ON_ERROR_STOP=1 -c \"CREATE DATABASE $USER OWNER $USER;\""
+sudo su - postgres -c "psql --set ON_ERROR_STOP=1 -c \"CREATE USER $DBUSER PASSWORD '$DBUSER';\""
+sudo su - postgres -c "psql --set ON_ERROR_STOP=1 -c \"CREATE DATABASE $DUSER OWNER $DUSER;\""
 
 
