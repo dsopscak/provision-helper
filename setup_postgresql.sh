@@ -33,9 +33,9 @@ exclude=postgresql*' /etc/yum.repos.d/CentOS-Base.repo
 sudo sed -i '/\[updates\]/a \
 exclude=postgresql*' /etc/yum.repos.d/CentOS-Base.repo
 
-curl -O http://yum.postgresql.org/9.3/redhat/rhel-6-x86_64/pgdg-centos93-9.3-1.noarch.rpm
+wget https://yum.postgresql.org/9.3/redhat/rhel-6-x86_64/pgdg-redhat93-9.3-3.noarch.rpm
 
-sudo rpm -ivh pgdg-centos93-9.3-1.noarch.rpm
+sudo rpm -ivh pgdg-redhat93-9.3-3.noarch.rpm
 sudo yum -y install postgresql93 postgresql93-server postgresql93-libs postgresql93-devel
 
 sudo service postgresql-9.3 initdb
