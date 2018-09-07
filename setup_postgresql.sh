@@ -33,31 +33,47 @@ exclude=postgresql*' /etc/yum.repos.d/CentOS-Base.repo
 sudo sed -i '/\[updates\]/a \
 exclude=postgresql*' /etc/yum.repos.d/CentOS-Base.repo
 
-wget https://yum.postgresql.org/9.3/redhat/rhel-6-x86_64/pgdg-redhat93-9.3-3.noarch.rpm
+wget https://download.postgresql.org/pub/repos/yum/10/redhat/rhel-7-x86_64/pgdg-redhat10-10-2.noarch.rpm
 
-sudo rpm -ivh pgdg-redhat93-9.3-3.noarch.rpm
-sudo yum -y install postgresql93 postgresql93-server postgresql93-libs postgresql93-devel
+sudo rpm -ivh pgdg-redhat10-10-2.noarch.rpm
+sudo yum -y install postgresql10 postgresql10-server postgresql10-libs postgresql10-devel
 
-sudo service postgresql-9.3 initdb
+# Adapted from the old 9.3 init.d script's initdb function
+PGDATA=/var/lib/pgsql/10/data
+PGLOG=/var/lib/pgsql/10/pgstartup.log
+PGENGINE=/usr/pgsql-10/bin
+sudo mkdir -p "$PGDATA"
+sudo chown postgres:postgres "$PGDATA"
+sudo chmod go-rwx "$PGDATA"
+sudo /sbin/restorecon "$PGDATA"
+sudo touch "$PGLOG"
+sudo chown postgres:postgres "$PGLOG"
+sudo chmod go-rwx "$PGLOG"
+sudo /sbin/restorecon "$PGLOG"
+sudo /sbin/runuser -l postgres -c "$PGENGINE/initdb --pgdata='$PGDATA' --auth='ident' >>\"$PGLOG\" 2>&1"
+sudo mkdir "$PGDATA/pg_log"
+sudo chown postgres:postgres "$PGDATA/pg_log"
+sudo chmod go-rwx "$PGDATA/pg_log"
+
 
 if [[ $ENABLE_NETWORK ]]; then
     sudo sed -i.orig \
         -e '/\(^host\W*all\W*all\W*127.0.0.1\/32\W*\)ident$/s//\1md5/' \
         -e '/\(^host\W*all\W*all\W*::1\/128\W*\)ident$/s//\1md5/' \
-        /var/lib/pgsql/9.3/data/pg_hba.conf
+        $PGDATA/pg_hba.conf
 
     if [[ $IP ]]; then
         sudo sed -i.orig \
             -e "/^#listen_addresses = .*$/s//listen_addresses = 'localhost,$IP'/" \
             -e "/^#port = 5432.*$/s//port = 5432/" \
-            /var/lib/pgsql/9.3/data/postgresql.conf
+            $PGDATA/postgresql.conf
         echo "host    all             all             $MASKED        md5" \
-            | sudo tee -a /var/lib/pgsql/9.3/data/pg_hba.conf
+            | sudo tee -a $PGDATA/pg_hba.conf
     fi
 fi
 
-sudo chkconfig postgresql-9.3 on
-sudo service postgresql-9.3 start
+sudo systemctl enable postgresql-10
+sudo systemctl start postgresql-10
 
 # Not secure
 sudo su - postgres -c "psql --set ON_ERROR_STOP=1 -c \"CREATE USER $DBUSER PASSWORD '$DBUSER';\""
