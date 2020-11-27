@@ -27,21 +27,12 @@ if [[ $1 == "--enable-network" ]]; then
     fi
 fi
 
-sudo sed -i '/\[base\]/a \
-exclude=postgresql*' /etc/yum.repos.d/CentOS-Base.repo
-
-sudo sed -i '/\[updates\]/a \
-exclude=postgresql*' /etc/yum.repos.d/CentOS-Base.repo
-
-wget https://download.postgresql.org/pub/repos/yum/10/redhat/rhel-7-x86_64/pgdg-redhat10-10-2.noarch.rpm
-
-sudo rpm -ivh pgdg-redhat10-10-2.noarch.rpm
-sudo yum -y install postgresql10 postgresql10-server postgresql10-libs postgresql10-devel
+sudo yum -y install postgresql postgresql-server postgresql-libs postgresql-devel
 
 # Adapted from the old 9.3 init.d script's initdb function
-PGDATA=/var/lib/pgsql/10/data
-PGLOG=/var/lib/pgsql/10/pgstartup.log
-PGENGINE=/usr/pgsql-10/bin
+PGDATA=/var/lib/pgsql/data
+PGLOG=/var/lib/pgsql/pgstartup.log
+PGENGINE=/usr/pgsql-bin
 sudo mkdir -p "$PGDATA"
 sudo chown postgres:postgres "$PGDATA"
 sudo chmod go-rwx "$PGDATA"
@@ -72,8 +63,8 @@ if [[ $ENABLE_NETWORK ]]; then
     fi
 fi
 
-sudo systemctl enable postgresql-10
-sudo systemctl start postgresql-10
+sudo systemctl enable postgresql
+sudo systemctl start postgresql
 
 # Not secure
 sudo su - postgres -c "psql --set ON_ERROR_STOP=1 -c \"CREATE USER $DBUSER PASSWORD '$DBUSER';\""
