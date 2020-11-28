@@ -32,7 +32,7 @@ sudo yum -y install postgresql postgresql-server postgresql-libs postgresql-deve
 # Adapted from the old 9.3 init.d script's initdb function
 PGDATA=/var/lib/pgsql/data
 PGLOG=/var/lib/pgsql/pgstartup.log
-PGENGINE=/usr/pgsql-bin
+
 sudo mkdir -p "$PGDATA"
 sudo chown postgres:postgres "$PGDATA"
 sudo chmod go-rwx "$PGDATA"
@@ -41,7 +41,7 @@ sudo touch "$PGLOG"
 sudo chown postgres:postgres "$PGLOG"
 sudo chmod go-rwx "$PGLOG"
 sudo /sbin/restorecon "$PGLOG"
-sudo /sbin/runuser -l postgres -c "$PGENGINE/initdb --pgdata='$PGDATA' --auth='ident' >>\"$PGLOG\" 2>&1"
+sudo /sbin/runuser -l postgres -c "initdb --pgdata='$PGDATA' --auth='ident' >>\"$PGLOG\" 2>&1"
 sudo mkdir "$PGDATA/pg_log"
 sudo chown postgres:postgres "$PGDATA/pg_log"
 sudo chmod go-rwx "$PGDATA/pg_log"
