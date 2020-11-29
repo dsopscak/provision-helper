@@ -29,7 +29,7 @@ file_format: 1
 EOT
 
 if [[ ! -f $RPM ]]; then
-    wget https://packages.chef.io/files/stable/chef/16.7.61/el/8/$RPM
+    wget --progress=bar:force https://packages.chef.io/files/stable/chef/16.7.61/el/8/$RPM
 fi
-sudo yum localinstall $RPM
+sudo yum localinstall -y $RPM
 
